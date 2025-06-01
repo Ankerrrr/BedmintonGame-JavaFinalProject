@@ -22,18 +22,21 @@ public class Racket {
     private int angle;
     boolean goBack;
     boolean swingComplete;
+    boolean swingType;
 
     public Racket(boolean LR) {
         this.LR = LR;
         angle = 150;
+        swingComplete = true;
+        swingType = false;
     }
 
     public void updatePoistion(int playerX, int playerY, int playerWidth, int playerHeight) {
         if (angle > 360) {
-            angle = 0;
+            angle = 0 + (angle - 360);
         }
         if (angle < 0) {
-            angle = 360;
+            angle = (angle % 360 + 360) % 360;
         }
         if (!LR) {
             this.setRacketPoisition((playerWidth / 2) + playerX, playerY - 50);
@@ -43,25 +46,31 @@ public class Racket {
     }
 
     public boolean swing(boolean swingType) { // 0 ->down, 1->up
+        this.swingType = swingType;
         if (swingTimer != null && swingTimer.isRunning()) {
             return false;
         }
         goBack = false;
         swingComplete = false;
         swingTimer = new Timer(30, e -> {
-            System.out.print(angle + ", ");
             if (!goBack) {
-
-                angle -= 20;
-                if ((angle >= 320 && swingType) || (angle <= 100 && !swingType)) {
+                if ((angle == 330 && swingType) || (angle <= 100 && !swingType)) {
                     goBack = true;
+                    // System.out.print("back ");
                 }
+                if (!swingType) {
+                    angle -= 20;
+                } else {
+                    angle -= 60;
+                }
+                // System.out.print(angle + ", ");
+
             } else {
 
                 angle += 30;
-
-                if (angle == 150) {
+                if (angle <= 150) {
                     swingComplete = true;
+                    angle = 150;
                     swingTimer.stop();
                 }
             }
@@ -122,5 +131,13 @@ public class Racket {
             return 360 - angle;
         }
         return angle;
+    }
+
+    public boolean isSwing() {
+        return !swingComplete;
+    }
+
+    public boolean swingType() {
+        return swingType;
     }
 }

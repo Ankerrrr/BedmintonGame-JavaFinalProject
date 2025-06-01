@@ -15,6 +15,8 @@ public class Ball {
     // non Number Verable
     Window window;
     Timer ballFlyTimer;
+    Racket racketRight;
+    Racket racketLeft;
 
     // private Verable
     private int ballX, ballY;
@@ -25,9 +27,11 @@ public class Ball {
     private int ballWidth = 20;
     private int ballHeigth = 20;
 
-    public Ball(Window window) {
+    public Ball(Window window, Racket racketRight, Racket racketLeft) {
         this.window = window;
-        ballX = 500;
+        this.racketRight = racketRight;
+        this.racketLeft = racketLeft;
+        ballX = 400;
         ballY = 500;
     }
 
@@ -40,8 +44,21 @@ public class Ball {
     }
 
     public void ballMove() {
-        if (collisionTouchRacket()) {
-            System.out.print("Touch");
+        if (collisionTouchRacketLeft() && racketLeft.isSwing()) { // low
+            if (!racketLeft.swingType()) {
+                System.out.print("Left Low, ");
+            } else {
+                System.out.print("Left High, ");
+            }
+            ballFly();
+        }
+
+        if (collisionTouchRacketRight() && racketRight.isSwing()) {
+            if (!racketRight.swingType()) {
+                System.out.print("right Low, ");
+            } else {
+                System.out.print("right High, ");
+            }
             ballFly();
         }
     }
@@ -58,12 +75,16 @@ public class Ball {
         ballFlyTimer.start();
     }
 
-    private boolean collisionTouchRacket() {
+    private boolean collisionTouchRacketLeft() {
         Shape leftRacketBounds = window.playerL.getRacket().getRotatedBounds();
+
+        return leftRacketBounds.intersects(getBounds());
+    }
+
+    private boolean collisionTouchRacketRight() {
         Shape rightRacketBounds = window.playerR.getRacket().getRotatedBounds();
 
-        return leftRacketBounds.intersects(getBounds()) ||
-                rightRacketBounds.intersects(getBounds());
+        return rightRacketBounds.intersects(getBounds());
     }
 
     public Rectangle getBounds() {
