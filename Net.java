@@ -26,4 +26,8 @@ public class Net extends JPanel {
     public int getWidth() {
         return width;
     }
+
+    public int getX() {
+        return netX;
+    }
 }

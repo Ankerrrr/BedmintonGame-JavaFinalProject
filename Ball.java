@@ -17,22 +17,32 @@ public class Ball {
     Timer ballFlyTimer;
     Racket racketRight;
     Racket racketLeft;
+    Net net;
 
     // private Verable
     private int ballX, ballY;
     private int nowBallSpeed;
+    private int targetX;
+    private int targetY;
+    private boolean ballGoingDown;
+    private double a;
+    private double vertexX, vertexY; // 拋物線頂點
 
     // const Verable
     private int ballSpeed = 3;
     private int ballWidth = 20;
     private int ballHeigth = 20;
+    private int lowSwingHeight = 350;
+    private int hightSwingHeight = 40;
+    // private int ballXAdd = 200;
 
-    public Ball(Window window, Racket racketRight, Racket racketLeft) {
+    public Ball(Window window, Racket racketRight, Racket racketLeft, Net net) {
         this.window = window;
         this.racketRight = racketRight;
         this.racketLeft = racketLeft;
-        ballX = 400;
-        ballY = 500;
+        this.net = net;
+        ballX = 300;
+        ballY = 400;
     }
 
     public void paint(Graphics2D g) {
@@ -46,21 +56,42 @@ public class Ball {
     public void ballMove() {
         if (collisionTouchRacketLeft() && racketLeft.isSwing()) { // low
             if (!racketLeft.swingType()) {
-                System.out.print("Left Low, ");
+                setBallState(false, false);
             } else {
-                System.out.print("Left High, ");
+                setBallState(false, true);
             }
             ballFly();
         }
 
         if (collisionTouchRacketRight() && racketRight.isSwing()) {
             if (!racketRight.swingType()) {
-                System.out.print("right Low, ");
+                setBallState(true, false);
             } else {
-                System.out.print("right High, ");
+                setBallState(true, true);
             }
             ballFly();
         }
+    }
+
+    private void setBallState(boolean LR, boolean lowOrHigh) {
+        int xOffect = 0;
+        if (!LR) {
+            targetX = net.getX() + ballX + xOffect;
+        } else {
+            targetX = net.getX() - (ballX - net.getX()) - xOffect;
+        }
+        System.out.println(targetX);
+        if (lowOrHigh) {
+            vertexY = 100;
+        } else {
+            vertexY = 300;
+        }
+
+        vertexX = Math.abs(ballX + targetX) / 2.0;
+        targetY = window.getHeight(); // 著陸點與起點同高
+
+        double dx = Math.abs(ballX - vertexX);
+        a = (ballY - vertexY) / (dx * dx);
     }
 
     private void ballFly() {
@@ -68,8 +99,22 @@ public class Ball {
             return;
         }
 
-        ballFlyTimer = new Timer(50, e -> {
-            // ballX += 10;
+        ballFlyTimer = new Timer(16, e -> {
+            // 水平移動
+            if (ballX < targetX) {
+                ballX += 3;
+            } else if (ballX > targetX) {
+                ballX -= 3;
+            }
+
+            // 拋物線公式 y = a(x - h)^2 + k
+            ballY = (int) (a * Math.pow(ballX - vertexX, 2) + vertexY);
+
+            // 停止條件：到達 targetX 附近
+            if (Math.abs(ballX - targetX) == 0) {
+                ((Timer) e.getSource()).stop();
+            }
+
         });
 
         ballFlyTimer.start();

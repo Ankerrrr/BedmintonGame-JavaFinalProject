@@ -32,7 +32,7 @@ public class Window extends JFrame implements KeyListener {
         playerL = new Player(this, net, false);
         playerR = new Player(this, net, true);
         ui = new UI(this);
-        ball = new Ball(this, playerR.getRacket(), playerL.getRacket());
+        ball = new Ball(this, playerR.getRacket(), playerL.getRacket(), net);
 
         this.setVisible(true);
     }
