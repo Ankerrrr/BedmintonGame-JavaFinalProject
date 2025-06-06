@@ -54,7 +54,6 @@ public class Ball extends JPanel {
         g.setColor(Color.YELLOW);
         // g.fillOval(ballX, ballY, ballWidth, ballHeigth);
         g.drawImage(resource.ballImage, ballX, ballY, ballWidth, ballHeigth, this);
-
         // g.setColor(Color.RED);
         // g.draw(getBounds());
     }

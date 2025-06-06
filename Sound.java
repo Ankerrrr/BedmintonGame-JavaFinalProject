@@ -100,7 +100,7 @@ public class Sound {
             Clip clip = AudioSystem.getClip();
             clip.open(sound);
             FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(-10f);
+            gainControl.setValue(-12f);
             clip.start();
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();
