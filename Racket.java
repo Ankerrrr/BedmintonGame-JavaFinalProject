@@ -10,6 +10,7 @@ import java.awt.Shape;
 
 public class Racket {
     // Non Number Verable
+    VisualResource resource;
     Timer swingTimer;
 
     // const Verable
@@ -23,6 +24,7 @@ public class Racket {
     boolean goBack;
     boolean swingComplete;
     boolean swingType;
+    int racketImageIndex;
 
     public Racket(boolean LR) {
         this.LR = LR;
@@ -54,6 +56,7 @@ public class Racket {
         swingComplete = false;
         swingTimer = new Timer(15, e -> {
             if (!goBack) {
+                racketImageIndex = 0;
                 if ((angle == 330 && swingType) || (angle <= 100 && !swingType)) {
                     goBack = true;
                 }
@@ -71,6 +74,7 @@ public class Racket {
                     angle = 150;
                     swingTimer.stop();
                 }
+                racketImageIndex = 1;
             }
 
         });
@@ -137,5 +141,9 @@ public class Racket {
 
     public boolean swingType() {
         return swingType;
+    }
+
+    public int getRacketImageIndex() {
+        return racketImageIndex;
     }
 }

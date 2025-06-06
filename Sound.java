@@ -6,12 +6,12 @@ public class Sound {
     public void playBG() {
         try {
             AudioInputStream sound = AudioSystem.getAudioInputStream(
-                    getClass().getResource("/sound/8-Bit Video Game Music - 8 Bit Adventure - Royalty Free.wav"));
+                    getClass().getResource("/sound/(BETA) Brawl Stars OST - Menu V1.wav"));
             Clip clip = AudioSystem.getClip();
             clip.open(sound);
 
             FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
-            gainControl.setValue(-25.0f);
+            gainControl.setValue(-15.0f);
 
             clip.start();
             clip.loop(Clip.LOOP_CONTINUOUSLY);
@@ -57,6 +57,50 @@ public class Sound {
             clip.open(sound);
             FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
             gainControl.setValue(-5.0f);
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void playjeje() {
+        try {
+            AudioInputStream sound = AudioSystem
+                    .getAudioInputStream(getClass().getResource("/sound/jejeje.wav"));
+            Clip clip = AudioSystem.getClip();
+            clip.open(sound);
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(-10f);
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void playToggle() {
+        try {
+            AudioInputStream sound = AudioSystem
+                    .getAudioInputStream(getClass()
+                            .getResource("/sound/ButtonPlate Click (Minecraft Sound) - Sound Effect for editing.wav"));
+            Clip clip = AudioSystem.getClip();
+            clip.open(sound);
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(-10f);
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void playStartGame() {
+        try {
+            AudioInputStream sound = AudioSystem
+                    .getAudioInputStream(getClass()
+                            .getResource("/sound/Start.wav"));
+            Clip clip = AudioSystem.getClip();
+            clip.open(sound);
+            FloatControl gainControl = (FloatControl) clip.getControl(FloatControl.Type.MASTER_GAIN);
+            gainControl.setValue(-10f);
             clip.start();
         } catch (UnsupportedAudioFileException | IOException | LineUnavailableException e) {
             e.printStackTrace();

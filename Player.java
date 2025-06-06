@@ -14,7 +14,9 @@ public class Player extends JPanel {
     private Window window;
     private Net net;
     private Racket racket;
+    private UI ui;
     private VisualResource visualResource;
+    private VisualResource visualresoNotPlayer;
     Sound sound;
     Timer slowDownTimer;
     Timer frameLoopTimer;
@@ -55,19 +57,24 @@ public class Player extends JPanel {
 
         protected static final int player2Left = KeyEvent.VK_LEFT;
         protected static final int player2Right = KeyEvent.VK_RIGHT;
-        protected static final int player2Jump = KeyEvent.VK_ENTER;
+        protected static final int player2Jump = KeyEvent.VK_UP;
         protected static final int player2UpSwing = KeyEvent.VK_P;
         protected static final int player2DownSwing = KeyEvent.VK_O;
+
+        protected static final int startGame = KeyEvent.VK_ENTER;
+        protected static final int Info = KeyEvent.VK_I;
     }
 
     // Function
-    public Player(Window w, Net net, boolean LR, Sound sound) {
+    public Player(Window w, Net net, boolean LR, Sound sound, UI ui) {
         racket = new Racket(LR);
         visualResource = new VisualResource(true, LR);
+        visualresoNotPlayer = new VisualResource(false);
         this.window = w;
         this.net = net;
         this.LR = LR;
         this.sound = sound;
+        this.ui = ui;
         playerY = window.getHeight() - height;
 
         if (this.LR == false) {
@@ -79,17 +86,22 @@ public class Player extends JPanel {
     }
 
     public void paint(Graphics2D g) {
+        // people
         AffineTransform oldTransform = g.getTransform();
 
         g.drawImage(visualResource.playerImage[photoIndex], playerX, playerY, width, height, this);
 
+        // racket
         int centerX = racket.getX() + racket.getWidth() / 2;
         int centerY = racket.getY() + racket.getHeight() / 2;
 
         g.rotate(Math.toRadians(racket.getAngle()), centerX, centerY + 80); // 80 is Good
 
         g.setColor(Color.WHITE);
-        g.fillRect(racket.getX(), racket.getY(), racket.getWidth(), racket.getHeight());
+        g.drawImage(visualresoNotPlayer.racket[racket.getRacketImageIndex()], racket.getX(), racket.getY(),
+                racket.getWidth(),
+                racket.getHeight(),
+                this);
 
         g.setTransform(oldTransform);
     }
@@ -231,6 +243,7 @@ public class Player extends JPanel {
             }
 
             if (nowSpeed == 0) {
+                sound.playjeje();
                 slowDownTimer.stop();
             }
         });
@@ -238,26 +251,35 @@ public class Player extends JPanel {
     }
 
     public void keyPress(KeyEvent k) {
-        if (k.getKeyCode() == Mykey.player1Left && !LR) {
-            LLbeenClick = true; // move
-        } else if (k.getKeyCode() == Mykey.player1Right && !LR) {
-            LRbeenClick = true;
-        } else if (k.getKeyCode() == Mykey.player2Left && LR) {
-            RLbeenClick = true;
-        } else if (k.getKeyCode() == Mykey.player2Right && LR) {
-            RRbeenClick = true;
-        } else if (k.getKeyCode() == Mykey.player1Jump && !LR) {
-            LJumping = true; // jump
-        } else if (k.getKeyCode() == Mykey.player2Jump && LR) {
-            RJumping = true;
-        } else if (k.getKeyCode() == Mykey.player1UpSwing && !LR) {
-            LupSwing = true;// swing
-        } else if (k.getKeyCode() == Mykey.player2UpSwing && LR) {
-            RupSwing = true;
-        } else if (k.getKeyCode() == Mykey.player1DownSwing && !LR) {
-            LdownSwing = true;// swing
-        } else if (k.getKeyCode() == Mykey.player2DownSwing && LR) {
-            RdownSwing = true;
+        if (window.gameState == window.gameState.PLAYING) {
+            if (k.getKeyCode() == Mykey.player1Left && !LR) {
+                LLbeenClick = true; // move
+            } else if (k.getKeyCode() == Mykey.player1Right && !LR) {
+                LRbeenClick = true;
+            } else if (k.getKeyCode() == Mykey.player2Left && LR) {
+                RLbeenClick = true;
+            } else if (k.getKeyCode() == Mykey.player2Right && LR) {
+                RRbeenClick = true;
+            } else if (k.getKeyCode() == Mykey.player1Jump && !LR) {
+                LJumping = true; // jump
+            } else if (k.getKeyCode() == Mykey.player2Jump && LR) {
+                RJumping = true;
+            } else if (k.getKeyCode() == Mykey.player1UpSwing && !LR) {
+                LupSwing = true;// swing
+            } else if (k.getKeyCode() == Mykey.player2UpSwing && LR) {
+                RupSwing = true;
+            } else if (k.getKeyCode() == Mykey.player1DownSwing && !LR) {
+                LdownSwing = true;// swing
+            } else if (k.getKeyCode() == Mykey.player2DownSwing && LR) {
+                RdownSwing = true;
+            }
+        } else if (window.gameState == window.gameState.START && !LR) {
+            if (k.getKeyCode() == Mykey.startGame) {
+                sound.playStartGame();
+                window.gameState = window.gameState.PLAYING;
+            } else if (k.getKeyCode() == Mykey.Info) {
+                ui.toggleInfo();
+            }
         }
     }
 

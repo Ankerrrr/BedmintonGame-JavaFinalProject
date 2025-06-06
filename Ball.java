@@ -12,7 +12,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.Shape;
 import java.util.Random;
 
-public class Ball {
+public class Ball extends JPanel {
     // non Number Verable
     Window window;
     Timer ballFlyTimer;
@@ -22,6 +22,7 @@ public class Ball {
     Timer racketTouchColdDownTimer;
     UI ui;
     Sound sound;
+    VisualResource resource;
 
     // private Verable
     private int ballX, ballY;
@@ -31,35 +32,38 @@ public class Ball {
     private boolean LR;
 
     // const Verable
-    private int ballWidth = 20;
-    private int ballHeigth = 20;
+    private int ballWidth = 25;
+    private int ballHeigth = 25;
     private int startPoisitionX = 300;
     private int startPoisitionY = 400;
 
-    public Ball(Window window, Racket racketRight, Racket racketLeft, Net net, UI ui, Sound sound) {
+    public Ball(Window window, Racket racketRight, Racket racketLeft, Net net, UI ui, Sound sound,
+            VisualResource resource) {
         this.window = window;
         this.racketRight = racketRight;
         this.racketLeft = racketLeft;
         this.net = net;
         this.ui = ui;
         this.sound = sound;
+        this.resource = resource;
         ballX = startPoisitionX;
         ballY = startPoisitionY;
     }
 
     public void paint(Graphics2D g) {
         g.setColor(Color.YELLOW);
-        g.fillOval(ballX, ballY, ballWidth, ballHeigth);
+        // g.fillOval(ballX, ballY, ballWidth, ballHeigth);
+        g.drawImage(resource.ballImage, ballX, ballY, ballWidth, ballHeigth, this);
 
-        g.setColor(Color.RED);
-        g.draw(getBounds());
+        // g.setColor(Color.RED);
+        // g.draw(getBounds());
     }
 
     public boolean racketTouchColdDown() {
         if (racketTouchColdDownTimer != null && racketTouchColdDownTimer.isRunning()) {
             return false;
         }
-        racketTouchColdDownTimer = new Timer(300, e -> {
+        racketTouchColdDownTimer = new Timer(600, e -> {
             racketTouchColdDownTimer.stop();
         });
 
@@ -97,7 +101,7 @@ public class Ball {
         sound.playSwing();
         this.LR = LR;
         Random rand = new Random();
-        int xOffectRandom = 5 + (int) rand.nextInt(150);
+        int xOffectRandom = 5 + (int) rand.nextInt(250);
 
         if (!LR) {
             targetX = net.getX() + Math.abs(ballX) + xOffectRandom;
@@ -142,9 +146,9 @@ public class Ball {
         ballFlyTimer = new Timer(16, e -> {
             // 水平移動
             if (ballX < targetX) {
-                ballX += 5;
+                ballX += 10;
             } else if (ballX > targetX) {
-                ballX -= 5;
+                ballX -= 10;
             }
 
             // 拋物線公式 y = a(x - h)^2 + k

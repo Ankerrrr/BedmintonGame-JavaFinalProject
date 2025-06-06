@@ -7,6 +7,8 @@ import java.awt.geom.AffineTransform;
 public class VisualResource {
     public BufferedImage[] playerImage;
     public BufferedImage backGroundImage;
+    public BufferedImage ballImage;
+    public BufferedImage[] racket;
 
     public VisualResource(boolean player, boolean LR) {
         try {
@@ -59,6 +61,17 @@ public class VisualResource {
         try {
             backGroundImage = ImageIO
                     .read(getClass().getResource("/images/NFUBed.jpg"));
+
+            ballImage = ImageIO
+                    .read(getClass().getResource("/images/ball.png"));
+
+            racket = new BufferedImage[2];
+            racket[1] = ImageIO
+                    .read(getClass().getResource("/images/racket1.png"));
+
+            racket[0] = ImageIO
+                    .read(getClass().getResource("/images/racket2.png"));
+
         } catch (IOException e) {
             System.out.println("Cant Find Image File Path");
             e.printStackTrace();

@@ -3,9 +3,11 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Toolkit;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
-import javax.swing.Timer;
+import javax.swing.*;
+import java.awt.*;
 
 public class Window extends JFrame implements KeyListener {
 
@@ -17,8 +19,14 @@ public class Window extends JFrame implements KeyListener {
     Player playerR;
     UI ui;
     Ball ball;
-    VisualResource visualresoBg;
+    VisualResource visualresoNotPlayer;
     static Sound sound;
+
+    public enum GameState {
+        START, PLAYING
+    }
+
+    public GameState gameState = GameState.START;
 
     public Window() {
         this.setTitle("羽毛球低低手!");
@@ -27,16 +35,19 @@ public class Window extends JFrame implements KeyListener {
         this.setLocationRelativeTo(null);
         this.setResizable(false);
         this.addKeyListener(this);
+        Image icon = Toolkit.getDefaultToolkit().getImage(getClass().getResource("/images/ball.png"));
+        setIconImage(icon);
+
     }
 
     public void initObject() {
         sound = new Sound();
+        ui = new UI(this, sound);
         net = new Net(this);
-        playerL = new Player(this, net, false, sound);
-        playerR = new Player(this, net, true, sound);
-        ui = new UI(this);
-        ball = new Ball(this, playerR.getRacket(), playerL.getRacket(), net, ui, sound);
-        visualresoBg = new VisualResource(false);
+        playerL = new Player(this, net, false, sound, ui);
+        playerR = new Player(this, net, true, sound, ui);
+        visualresoNotPlayer = new VisualResource(false);
+        ball = new Ball(this, playerR.getRacket(), playerL.getRacket(), net, ui, sound, visualresoNotPlayer);
 
         init();
     }
@@ -54,7 +65,7 @@ public class Window extends JFrame implements KeyListener {
             bufferGraphics = buffer.getGraphics();
         }
 
-        bufferGraphics.drawImage(visualresoBg.backGroundImage, 0, 0, getWidth(), getHeight(), this);
+        bufferGraphics.drawImage(visualresoNotPlayer.backGroundImage, 0, 0, getWidth(), getHeight(), this);
 
         Graphics2D g2d = (Graphics2D) bufferGraphics;
 
@@ -64,8 +75,8 @@ public class Window extends JFrame implements KeyListener {
         net.paint(g2d);
         playerL.paint(g2d);
         playerR.paint(g2d);
-        ui.paint(g2d);
         ball.paint(g2d);
+        ui.paint(g2d);
 
         g.drawImage(buffer, 0, 0, this);
     }
