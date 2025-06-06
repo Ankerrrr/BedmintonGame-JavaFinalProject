@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.Shape;
+import java.util.Random;
 
 public class Ball {
     // non Number Verable
@@ -18,31 +19,32 @@ public class Ball {
     Racket racketRight;
     Racket racketLeft;
     Net net;
+    Timer racketTouchColdDownTimer;
+    UI ui;
+    Sound sound;
 
     // private Verable
     private int ballX, ballY;
-    private int nowBallSpeed;
     private int targetX;
-    private int targetY;
-    private boolean ballGoingDown;
     private double a;
     private double vertexX, vertexY; // 拋物線頂點
+    private boolean LR;
 
     // const Verable
-    private int ballSpeed = 3;
     private int ballWidth = 20;
     private int ballHeigth = 20;
-    private int lowSwingHeight = 350;
-    private int hightSwingHeight = 40;
-    // private int ballXAdd = 200;
+    private int startPoisitionX = 300;
+    private int startPoisitionY = 400;
 
-    public Ball(Window window, Racket racketRight, Racket racketLeft, Net net) {
+    public Ball(Window window, Racket racketRight, Racket racketLeft, Net net, UI ui, Sound sound) {
         this.window = window;
         this.racketRight = racketRight;
         this.racketLeft = racketLeft;
         this.net = net;
-        ballX = 300;
-        ballY = 400;
+        this.ui = ui;
+        this.sound = sound;
+        ballX = startPoisitionX;
+        ballY = startPoisitionY;
     }
 
     public void paint(Graphics2D g) {
@@ -53,12 +55,27 @@ public class Ball {
         g.draw(getBounds());
     }
 
+    public boolean racketTouchColdDown() {
+        if (racketTouchColdDownTimer != null && racketTouchColdDownTimer.isRunning()) {
+            return false;
+        }
+        racketTouchColdDownTimer = new Timer(300, e -> {
+            racketTouchColdDownTimer.stop();
+        });
+
+        racketTouchColdDownTimer.start();
+        return true;
+    }
+
     public void ballMove() {
         if (collisionTouchRacketLeft() && racketLeft.isSwing()) { // low
             if (!racketLeft.swingType()) {
                 setBallState(false, false);
             } else {
                 setBallState(false, true);
+            }
+            if (racketTouchColdDown() && ballFlyTimer != null && ballFlyTimer.isRunning()) {
+                ballFlyTimer.stop();
             }
             ballFly();
         }
@@ -69,18 +86,26 @@ public class Ball {
             } else {
                 setBallState(true, true);
             }
+            if (racketTouchColdDown() && ballFlyTimer != null && ballFlyTimer.isRunning()) {
+                ballFlyTimer.stop();
+            }
             ballFly();
         }
     }
 
     private void setBallState(boolean LR, boolean lowOrHigh) {
-        int xOffect = 0;
+        sound.playSwing();
+        this.LR = LR;
+        Random rand = new Random();
+        int xOffectRandom = 5 + (int) rand.nextInt(150);
+
         if (!LR) {
-            targetX = net.getX() + ballX + xOffect;
+            targetX = net.getX() + Math.abs(ballX) + xOffectRandom;
+            System.out.println(targetX);
         } else {
-            targetX = net.getX() - (ballX - net.getX()) - xOffect;
+            targetX = net.getX() - Math.abs(window.getWidth() - ballX) - xOffectRandom;
         }
-        System.out.println(targetX);
+
         if (lowOrHigh) {
             vertexY = 100;
         } else {
@@ -88,36 +113,64 @@ public class Ball {
         }
 
         vertexX = Math.abs(ballX + targetX) / 2.0;
-        targetY = window.getHeight(); // 著陸點與起點同高
 
         double dx = Math.abs(ballX - vertexX);
-        a = (ballY - vertexY) / (dx * dx);
+        ballY = 600;
+        a = Math.abs(ballY - vertexY) / (dx * dx);
     }
 
     private void ballFly() {
         if (ballFlyTimer != null && ballFlyTimer.isRunning()) {
             return;
         }
+        // 拋物線公式 y = a(x - h)^2 + k
+        int limitCount = 40;
+        while (!LR && (racketLeft.getY() + 50) < ballY || LR && (racketRight.getY() + 50) < ballY) {
+            // 拋物線底開始計算 要讓球變成從拍子飛出去
+            if (ballX < targetX) {
+                ballX += 1;
+            } else if (ballX > targetX) {
+                ballX -= 1;
+            }
+            ballY = (int) (a * Math.pow(ballX - vertexX, 2) + vertexY);
+            // System.out.print("Loop: " + racketLeft.getY() + "ball:" + ballY);
+            if (limitCount-- <= 0) {
+                break;
+            }
+        }
 
         ballFlyTimer = new Timer(16, e -> {
             // 水平移動
             if (ballX < targetX) {
-                ballX += 3;
+                ballX += 5;
             } else if (ballX > targetX) {
-                ballX -= 3;
+                ballX -= 5;
             }
 
             // 拋物線公式 y = a(x - h)^2 + k
             ballY = (int) (a * Math.pow(ballX - vertexX, 2) + vertexY);
 
-            // 停止條件：到達 targetX 附近
-            if (Math.abs(ballX - targetX) == 0) {
+            if (Math.abs(ballY) >= 600) {
+                Lose();
                 ((Timer) e.getSource()).stop();
             }
+
+            // System.out.print("X," + ballX + "Y" + ballY);
 
         });
 
         ballFlyTimer.start();
+    }
+
+    private void Lose() {
+        ui.addScore(LR);
+        sound.playBeep();
+        if (!LR) {
+            ballX = startPoisitionX;
+        } else {
+            ballX = window.getWidth() - startPoisitionX;
+        }
+        ballY = startPoisitionY;
     }
 
     private boolean collisionTouchRacketLeft() {

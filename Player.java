@@ -14,10 +14,12 @@ public class Player extends JPanel {
     private Window window;
     private Net net;
     private Racket racket;
-    private Resource resource;
+    private VisualResource visualResource;
+    Sound sound;
     Timer slowDownTimer;
     Timer frameLoopTimer;
     Timer jumpTimer;
+    Timer moveSoundTimer;
 
     // private verable
     private int playerX, playerY;
@@ -59,12 +61,13 @@ public class Player extends JPanel {
     }
 
     // Function
-    public Player(Window w, Net net, boolean LR) {
+    public Player(Window w, Net net, boolean LR, Sound sound) {
         racket = new Racket(LR);
-        resource = new Resource(LR);
+        visualResource = new VisualResource(true, LR);
         this.window = w;
         this.net = net;
         this.LR = LR;
+        this.sound = sound;
         playerY = window.getHeight() - height;
 
         if (this.LR == false) {
@@ -78,7 +81,7 @@ public class Player extends JPanel {
     public void paint(Graphics2D g) {
         AffineTransform oldTransform = g.getTransform();
 
-        g.drawImage(resource.playerImage[photoIndex], playerX, playerY, width, height, this);
+        g.drawImage(visualResource.playerImage[photoIndex], playerX, playerY, width, height, this);
 
         int centerX = racket.getX() + racket.getWidth() / 2;
         int centerY = racket.getY() + racket.getHeight() / 2;
@@ -166,6 +169,7 @@ public class Player extends JPanel {
         }
         if (nowSpeed != 0) {
             changeFrame(0, true);
+            moveSound();
         }
         if (!LR) { // player1
             if (LLbeenClick && !LRbeenClick) {
@@ -202,6 +206,17 @@ public class Player extends JPanel {
         }
         playerX += nowSpeed;
 
+    }
+
+    private void moveSound() {
+        if (moveSoundTimer != null && moveSoundTimer.isRunning()) {
+            return;
+        }
+        moveSoundTimer = new Timer(400, e -> {
+            moveSoundTimer.stop();
+        });
+        sound.playMove();
+        moveSoundTimer.start();
     }
 
     private void slowDown() {

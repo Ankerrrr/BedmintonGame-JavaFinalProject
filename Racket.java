@@ -52,21 +52,19 @@ public class Racket {
         }
         goBack = false;
         swingComplete = false;
-        swingTimer = new Timer(30, e -> {
+        swingTimer = new Timer(15, e -> {
             if (!goBack) {
                 if ((angle == 330 && swingType) || (angle <= 100 && !swingType)) {
                     goBack = true;
-                    // System.out.print("back ");
                 }
                 if (!swingType) {
-                    angle -= 20;
+                    angle -= 5;
                 } else {
-                    angle -= 60;
+                    swingTimer.setDelay(5);
+                    angle -= 5;
                 }
-                // System.out.print(angle + ", ");
 
             } else {
-
                 angle += 30;
                 if (angle <= 150) {
                     swingComplete = true;

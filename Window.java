@@ -17,6 +17,8 @@ public class Window extends JFrame implements KeyListener {
     Player playerR;
     UI ui;
     Ball ball;
+    VisualResource visualresoBg;
+    static Sound sound;
 
     public Window() {
         this.setTitle("羽毛球低低手!");
@@ -28,13 +30,20 @@ public class Window extends JFrame implements KeyListener {
     }
 
     public void initObject() {
+        sound = new Sound();
         net = new Net(this);
-        playerL = new Player(this, net, false);
-        playerR = new Player(this, net, true);
+        playerL = new Player(this, net, false, sound);
+        playerR = new Player(this, net, true, sound);
         ui = new UI(this);
-        ball = new Ball(this, playerR.getRacket(), playerL.getRacket(), net);
+        ball = new Ball(this, playerR.getRacket(), playerL.getRacket(), net, ui, sound);
+        visualresoBg = new VisualResource(false);
 
+        init();
+    }
+
+    public void init() {
         this.setVisible(true);
+        sound.playBG();
     }
 
     @Override
@@ -45,10 +54,12 @@ public class Window extends JFrame implements KeyListener {
             bufferGraphics = buffer.getGraphics();
         }
 
-        bufferGraphics.setColor(Color.BLACK);
-        bufferGraphics.fillRect(0, 0, getWidth(), getHeight());
+        bufferGraphics.drawImage(visualresoBg.backGroundImage, 0, 0, getWidth(), getHeight(), this);
 
         Graphics2D g2d = (Graphics2D) bufferGraphics;
+
+        g2d.setColor(new Color(0, 0, 0, 170));
+        g2d.fillRect(0, 0, getWidth(), getHeight());
 
         net.paint(g2d);
         playerL.paint(g2d);
