@@ -12,6 +12,6 @@
   執行方式
 
   ```bash
-  $ javac window.java
-  $ java window
+  $ javac Window.java
+  $ java Window
   ```

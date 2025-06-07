@@ -62,7 +62,7 @@ public class Ball extends JPanel {
         if (racketTouchColdDownTimer != null && racketTouchColdDownTimer.isRunning()) {
             return false;
         }
-        racketTouchColdDownTimer = new Timer(600, e -> {
+        racketTouchColdDownTimer = new Timer(2000, e -> {
             racketTouchColdDownTimer.stop();
         });
 
@@ -145,16 +145,16 @@ public class Ball extends JPanel {
         ballFlyTimer = new Timer(16, e -> {
             // 水平移動
             if (ballX < targetX) {
-                ballX += 10;
+                ballX += 5;
             } else if (ballX > targetX) {
-                ballX -= 10;
+                ballX -= 5;
             }
 
             // 拋物線公式 y = a(x - h)^2 + k
             ballY = (int) (a * Math.pow(ballX - vertexX, 2) + vertexY);
 
             if (Math.abs(ballY) >= 600) {
-                Lose();
+                touchGround();
                 ((Timer) e.getSource()).stop();
             }
 
@@ -165,7 +165,7 @@ public class Ball extends JPanel {
         ballFlyTimer.start();
     }
 
-    private void Lose() {
+    private void touchGround() {
         ui.addScore(LR);
         sound.playBeep();
         if (!LR) {
@@ -174,6 +174,13 @@ public class Ball extends JPanel {
             ballX = window.getWidth() - startPoisitionX;
         }
         ballY = startPoisitionY;
+
+        if (ui.getLScore() >= 15 || ui.getRScore() >= 15) {
+            sound.stopBG();
+            sound.playLose();
+
+            window.gameState = window.gameState.SHOWSCORE;
+        }
     }
 
     private boolean collisionTouchRacketLeft() {

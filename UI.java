@@ -29,6 +29,8 @@ public class UI {
 
     public void paint(Graphics2D g) {
         if (window.gameState == window.gameState.START) {
+            LScore = 0;
+            RScore = 0;
             g.setColor(new Color(0, 0, 0, 170));
             g.fillRect(0, 0, window.getWidth(), window.getHeight());
 
@@ -64,12 +66,25 @@ public class UI {
             }
 
         } else if (window.gameState == window.gameState.PLAYING) {
-            // Show score
+            // game UI
             g.setColor(Color.GREEN);
             g.setFont(new Font("Verdana", Font.BOLD, 50));
             g.drawString(Integer.toString(LScore), scorePoisitionX, scorePoisitionY);
             g.setColor(Color.YELLOW);
             g.drawString(Integer.toString(RScore), window.getWidth() - scorePoisitionX, scorePoisitionY);
+        } else if (window.gameState == window.gameState.SHOWSCORE) {
+            g.setColor(Color.ORANGE);
+            g.setFont(new Font("Microsoft JhengHei", Font.BOLD, 50));
+            if (LScore > RScore) {
+                g.drawString("1P Win!!", 370, 220);
+            } else {
+                g.drawString("2P Win!!", 370, 220);
+            }
+            g.drawString(Integer.toString(LScore), scorePoisitionX, scorePoisitionY);
+            g.setColor(Color.YELLOW);
+            g.drawString(Integer.toString(RScore), window.getWidth() - scorePoisitionX, scorePoisitionY);
+            g.setFont(new Font("Microsoft JhengHei", Font.BOLD, 32));
+            g.drawString("按下 Enter 回到首頁", 350, 320);
         }
     }
 
@@ -84,5 +99,13 @@ public class UI {
     public void toggleInfo() {
         showInfo = !showInfo;
         sound.playToggle();
+    }
+
+    public int getLScore() {
+        return LScore;
+    }
+
+    public int getRScore() {
+        return RScore;
     }
 }

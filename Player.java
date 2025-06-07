@@ -276,9 +276,18 @@ public class Player extends JPanel {
         } else if (window.gameState == window.gameState.START && !LR) {
             if (k.getKeyCode() == Mykey.startGame) {
                 sound.playStartGame();
+                sound.stopMenu();
+                sound.playBG();
                 window.gameState = window.gameState.PLAYING;
             } else if (k.getKeyCode() == Mykey.Info) {
                 ui.toggleInfo();
+            }
+        } else if (window.gameState == window.gameState.SHOWSCORE && !LR) {
+            if (k.getKeyCode() == Mykey.startGame) {
+                // sound.playStartGame();
+                sound.stopLose();
+                sound.playMenu();
+                window.gameState = window.gameState.START;
             }
         }
     }

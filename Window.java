@@ -23,7 +23,7 @@ public class Window extends JFrame implements KeyListener {
     static Sound sound;
 
     public enum GameState {
-        START, PLAYING
+        START, PLAYING, SHOWSCORE
     }
 
     public GameState gameState = GameState.START;
@@ -54,7 +54,7 @@ public class Window extends JFrame implements KeyListener {
 
     public void init() {
         this.setVisible(true);
-        sound.playBG();
+        sound.playMenu();
     }
 
     @Override
