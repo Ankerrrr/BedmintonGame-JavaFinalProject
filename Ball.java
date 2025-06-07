@@ -173,6 +173,7 @@ public class Ball extends JPanel {
         } else {
             ballX = window.getWidth() - startPoisitionX;
         }
+        ballY = startPoisitionY;
 
         if (ui.getLScore() >= 15 || ui.getRScore() >= 15) {
             sound.stopBG();
