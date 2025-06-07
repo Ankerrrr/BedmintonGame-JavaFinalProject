@@ -104,7 +104,7 @@ public class Ball extends JPanel {
 
         if (!LR) {
             targetX = net.getX() + Math.abs(ballX) + xOffectRandom;
-            System.out.println(targetX);
+            // System.out.println(targetX);
         } else {
             targetX = net.getX() - Math.abs(window.getWidth() - ballX) - xOffectRandom;
         }
@@ -173,7 +173,6 @@ public class Ball extends JPanel {
         } else {
             ballX = window.getWidth() - startPoisitionX;
         }
-        ballY = startPoisitionY;
 
         if (ui.getLScore() >= 15 || ui.getRScore() >= 15) {
             sound.stopBG();

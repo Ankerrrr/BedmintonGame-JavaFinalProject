@@ -82,6 +82,7 @@ public class Window extends JFrame implements KeyListener {
     }
 
     public static void main(String[] args) {
+        System.out.println("Welcome, this game is making for java Final project, Thank for your playing");
         Window frame = new Window();
         javax.swing.SwingUtilities.invokeLater(() -> {
             frame.initObject(); // 在 UI 初始化後建立 Player
